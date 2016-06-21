@@ -17,26 +17,26 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable(){
         //Fired when the server enables the plugin
-        yaml.loadConfiguration("plugins/Godsy/players.yml"); //ERRORING - Cannot Resolve method
 
-        File f = new File("plugins/Godsy/config.yml");
-        if(!f.exists() && !f.isDirectory()) {
+        try
+        {
+            File p = new File("plugins/Godsy/players.yml");
+            File f = new File("plugins/Godsy/config.yml");
             File dir = new File("plugins/Godsy");
-            boolean successful = dir.mkdir();
-            if (successful)
-            {
-                //Successfully created a directory
-                if(!f.exists())
-                {
-                    this.saveDefaultConfig();
-                }
-                getLogger().info("Godsy config created");
+            if (!dir.exists()) {
+                dir.mkdir();
             }
-            else
-            {
-                // creating the directory failed
-                getLogger().severe("Failed to create config file, using default");
+            if (!p.exists()) {
+                p.createNewFile();
             }
+            if (!f.exists()) {
+                saveDefaultConfig();
+            }
+            yaml.loadConfiguration(p);
+        }
+        catch(Exception f)
+        {
+            Bukkit.broadcastMessage(f.getMessage());
         }
 
         yaml.createSection("players");
@@ -44,7 +44,16 @@ public class Main extends JavaPlugin {
     }
 
     @Override
-    public void onDisable(){
+    public void onDisable() {
+        try
+        {
+            yaml.save("plugins/Godsy/players.yml");
+        }
+        catch(Exception d)
+        {
+            Bukkit.broadcastMessage(d.getMessage());
+        }
+
         //Fired when the server stops and disables all plugins
     }
 
@@ -75,13 +84,10 @@ public class Main extends JavaPlugin {
                         player.addPotionEffect(PotionEffectType.CONFUSION.createEffect((int) 500L, 0), true);
 
                         yaml.createSection("players." + ((Player) sender).getUniqueId());
-                        yaml.createSection("players." + ((Player) sender).getUniqueId() + ".username");
-                        yaml.createSection("players." + ((Player) sender).getUniqueId() + ".god");
-                        yaml.createSection("players." + ((Player) sender).getUniqueId() + ".faith");
+
                         yaml.set("players." + ((Player) sender).getUniqueId() + ".username", "\"" + sender.getName() + "\"");
                         yaml.set("players." + ((Player) sender).getUniqueId() + ".god", "\"" + getConfig().getString("gods." + args[0].toLowerCase() + ".name" + "\""));
                         yaml.set("players." + ((Player) sender).getUniqueId() + ".faith", 0);
-                        yaml.save("plugins/Godsy/players.yml");
 
                         //sender.sendMessage(getConfig().getString(yaml.get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"))));
 
