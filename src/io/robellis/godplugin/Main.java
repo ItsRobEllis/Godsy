@@ -5,12 +5,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Sound;
 
 public class Main extends JavaPlugin {
+
+    YamlConfiguration yaml = new YamlConfiguration();
     @Override
     public void onEnable(){
         //Fired when the server enables the plugin
@@ -34,6 +37,8 @@ public class Main extends JavaPlugin {
                 getLogger().severe("Failed to create config file, using default");
             }
         }
+
+        yaml.createSection("players");
         Bukkit.broadcastMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + "Godsy v" + ChatColor.GREEN + getDescription().getVersion() + ChatColor.RESET + " enabled!");
     }
 
@@ -46,33 +51,59 @@ public class Main extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
             if (command.getName().equalsIgnoreCase("worship")) {
-               // if(true/*TODO check if player has alignment*/)
-                //{
+                if(yaml.get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name")) == null)
+                {
                     //Send a confirmation message
                     try{
-                        sender.sendMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] : You are now worshipping §" + getConfig().getInt("gods." + args[0].toLowerCase() + ".colour")
+                        sender.sendMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] : You are now worshipping §" + getConfig().getString("gods." + args[0].toLowerCase() + ".colour")
                                 + getConfig().getString("gods." + args[0].toLowerCase() + ".name") + ChatColor.RESET + "!");
 
+                        //sender.sendMessage("[" + ChatColor.RED + "DEBUG" + ChatColor.RESET + "] : " + getConfig().getString("gods." + args[0].toLowerCase() + ".player"));
+
+                        Player isOnline = Bukkit.getPlayerExact(getConfig().getString("gods." + args[0].toLowerCase() + ".player"));
                         Player god = Bukkit.getServer().getPlayer(getConfig().getString("gods." + args[0].toLowerCase() + ".player"));
-                        god.sendMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] : " + ChatColor.GREEN + sender.getName() + ChatColor.RESET + " is now worshipping you!");
+                        if(isOnline != null)
+                        {
+                            god.sendMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] : " + ChatColor.GREEN + sender.getName() + ChatColor.RESET + " is now worshipping you!");
+                        }
 
                         //Get the player's location and play a sound
                         Player player=(Player) sender;
                         player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_AMBIENT, 1, 0);
                         //Give the player nausea
                         player.addPotionEffect(PotionEffectType.CONFUSION.createEffect((int) 500L, 0), true);
+
+                        yaml.createSection("players." + ((Player) sender).getUniqueId());
+                        yaml.createSection("players." + ((Player) sender).getUniqueId() + ".username");
+                        yaml.createSection("players." + ((Player) sender).getUniqueId() + ".god");
+                        yaml.createSection("players." + ((Player) sender).getUniqueId() + ".faith");
+                        yaml.set("players." + ((Player) sender).getUniqueId() + ".username", "\"" + sender.getName() + "\"");
+                        yaml.set("players." + ((Player) sender).getUniqueId() + ".god", "\"" + getConfig().getString("gods." + args[0].toLowerCase() + ".name" + "\""));
+                        yaml.set("players." + ((Player) sender).getUniqueId() + ".faith", 0);
+                        yaml.save("plugins/Godsy/players.yml");
+
+                        //sender.sendMessage(getConfig().getString(yaml.get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"))));
+
                     }
                     catch(Exception e){
                         Bukkit.broadcastMessage(e.getMessage());
                     }
 
                     // TODO write player alignment to file
-                //}
-                //else
-                //{
-                    /*sender.sendMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + ": You would have to forsake " + '§' + getConfig().getInt("gods." + TODO + ".colour")
-                            + getConfig().getString("gods." + TODO + ".name") + ChatColor.RESET + " first!");*/
-                //}
+                }
+                else
+                {
+                    sender.sendMessage(
+                            "[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + ": You would have to forsake §"
+                            + getConfig().getString(
+                                    "gods." + yaml.get("plugins/Godsy/players.yml", ("players." + ((Player) sender).getUniqueId() + ".god") + ".colour")
+                            )
+                            + getConfig().getString(
+                                    "gods." + yaml.get("plugins/Godsy/players.yml", ("players." + ((Player) sender).getUniqueId() + ".god").toLowerCase())
+                            )
+                    );
+                    //yaml.get("players." + ((Player) sender).getUniqueId() + ".god");
+                }
                 return true;
             }
         }
