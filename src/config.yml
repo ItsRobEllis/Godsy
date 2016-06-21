@@ -1,0 +1,49 @@
+# This file is to configure the gods that exist in the game, as well as their powers
+# Use this to add your own gods with powers or assign them to players
+
+powers:
+    ability_duration: 10        # The time that active abilities last for
+    faith_limit: 5000           # The maximum faith a player can have
+    power_costs:                # The costs for powers - the more powers a god has, the more they will cost
+        - 100
+        - 500
+        - 1000
+        - 1500
+        - 2500
+        - 4000
+        - 5000
+
+gods:
+    war:
+        name: "War"           # The name of the god as it appears in game
+        colour: 4               # The colour of the god in-game
+        player: "digitmeiser"   # The player that exists as the god - leave blank for no player
+        powers:                 # The powers of the god
+            - fire_punch        # The first passive power of the god
+            - strength          # The second passive of the god
+            - battlecry         # The active ability of the god
+    corruption:
+        name:   "Corruption"
+        colour: 5
+        player: "JiggieD"
+        powers:
+            - skirmish
+            - laced_shot
+            - steady_foot
+    maelstrom:
+        name:   "Maelstrom"
+        colour: 9
+        player: "TheRobboCop"
+        powers:
+            - bounty_skies
+            - gills
+            - lightning
+    forge:
+        name:   "Forge"
+        colour: 6
+        player: "Ooge"
+        powers:
+            - bounty_skies
+            - gills
+            - lightning
+

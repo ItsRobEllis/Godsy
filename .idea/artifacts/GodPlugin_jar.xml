@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GodPlugin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GodPlugin_jar</output-path>
+    <root id="archive" name="Godsy.jar">
+      <element id="module-output" name="GodPlugin" />
+    </root>
+  </artifact>
+</component>

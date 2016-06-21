@@ -1,0 +1,24 @@
+name: Godsy
+version: 0.1
+author: Rob Ellis
+main: io.robellis.godplugin.Main
+commands:
+    faith:
+        description: Lists how much favour you have with your god.
+        usage: /faith <player>
+        aliases: [fav]
+    forsake:
+        description: Forsake your god, applying the god's curse and giving your old god's supporters a reward for killing you.
+        usage: /forsake
+    worship:
+        description: Worship a god.
+        usage: /worship <god>
+        aliases: [g]
+    worshiplist:
+        description: View the gods you can worship.
+        usage: /worshiplist
+        aliases: [gl, pantheon]
+    gs:
+        description: Speak as a god, if you are one
+        usage: /gs <message>
+        aliases: [godspeak]
