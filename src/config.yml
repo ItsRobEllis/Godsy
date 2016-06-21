@@ -1,6 +1,5 @@
 # This file is to configure the gods that exist in the game, as well as their powers
 # Use this to add your own gods with powers or assign them to players
-
 powers:
     ability_duration: 10        # The time that active abilities last for
     faith_limit: 5000           # The maximum faith a player can have
@@ -12,7 +11,6 @@ powers:
         - 2500
         - 4000
         - 5000
-
 gods:
     war:
         name: "War"           # The name of the god as it appears in game

@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.*;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,33 +12,27 @@ import org.bukkit.Sound;
 
 public class Main extends JavaPlugin {
 
-    YamlConfiguration yaml = new YamlConfiguration();
     @Override
     public void onEnable(){
         //Fired when the server enables the plugin
 
         try
         {
-            File p = new File("plugins/Godsy/players.yml");
             File f = new File("plugins/Godsy/config.yml");
             File dir = new File("plugins/Godsy");
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            if (!p.exists()) {
-                p.createNewFile();
-            }
             if (!f.exists()) {
                 saveDefaultConfig();
             }
-            yaml.loadConfiguration(p);
         }
         catch(Exception f)
         {
             f.printStackTrace();
         }
 
-        yaml.createSection("players");
+        getConfig().createSection("players");
         Bukkit.broadcastMessage("[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + "Godsy v" + ChatColor.GREEN + getDescription().getVersion() + ChatColor.RESET + " enabled!");
     }
 
@@ -47,7 +40,7 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         try
         {
-            yaml.save("plugins/Godsy/players.yml");
+            saveConfig();
         }
         catch(Exception d)
         {
@@ -61,7 +54,7 @@ public class Main extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
             if (command.getName().equalsIgnoreCase("worship")) {
-                if(!yaml.contains("players." + ((Player) sender).getUniqueId()))
+                if(!getConfig().contains("players." + ((Player) sender).getUniqueId()))
                 {
                     //Send a confirmation message
                     try{
@@ -83,13 +76,13 @@ public class Main extends JavaPlugin {
                         //Give the player nausea
                         player.addPotionEffect(PotionEffectType.CONFUSION.createEffect((int) 500L, 0), true);
 
-                        yaml.createSection("players." + ((Player) sender).getUniqueId());
+                        getConfig().createSection("players." + ((Player) sender).getUniqueId());
 
-                        yaml.set("players." + ((Player) sender).getUniqueId() + ".username", sender.getName());
-                        yaml.set("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"));
-                        yaml.set("players." + ((Player) sender).getUniqueId() + ".faith", 0);
+                        getConfig().set("players." + ((Player) sender).getUniqueId() + ".username", sender.getName());
+                        getConfig().set("players." + ((Player) sender).getUniqueId() + ".god", args[0]);
+                        getConfig().set("players." + ((Player) sender).getUniqueId() + ".faith", 0);
 
-                        //sender.sendMessage(getConfig().getString(yaml.get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"))));
+                        //sender.sendMessage(getConfig().getString(getConfig().get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"))));
 
                     }
                     catch(Exception e){
@@ -98,18 +91,18 @@ public class Main extends JavaPlugin {
                 }
                 else
                 {
-
-                    String senderGod = yaml.getString("players." + ((Player) sender).getUniqueId() + ".god");
+                    String senderGod = getConfig().getString("players." + ((Player) sender).getUniqueId() + ".god").toLowerCase();
                     sender.sendMessage(
-                            "[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + ": You would have to forsake §"
-                            + getConfig().getString(
-                                    "gods." + senderGod + ".colour"
+                        "[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + ": You would have to forsake §"
+                                + getConfig().getString
+                            (
+                                "gods." + senderGod + ".colour"
                             )
-                            + getConfig().getString(
-                                    "gods." + senderGod + ".name"
+                                + getConfig().getString(
+                                "gods." + senderGod + ".name"
                             )
+                        + ChatColor.RESET + " to do that!"
                     );
-
                 }
                 return true;
             }
