@@ -17,6 +17,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable(){
         //Fired when the server enables the plugin
+        yaml.loadConfiguration("plugins/Godsy/players.yml"); //ERRORING - Cannot Resolve method
 
         File f = new File("plugins/Godsy/config.yml");
         if(!f.exists() && !f.isDirectory()) {
@@ -51,7 +52,7 @@ public class Main extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
             if (command.getName().equalsIgnoreCase("worship")) {
-                if(yaml.get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name")) == null)
+                if(!yaml.contains("players." + ((Player) sender).getUniqueId()))
                 {
                     //Send a confirmation message
                     try{
@@ -88,8 +89,6 @@ public class Main extends JavaPlugin {
                     catch(Exception e){
                         Bukkit.broadcastMessage(e.getMessage());
                     }
-
-                    // TODO write player alignment to file
                 }
                 else
                 {
