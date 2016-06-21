@@ -36,7 +36,7 @@ public class Main extends JavaPlugin {
         }
         catch(Exception f)
         {
-            Bukkit.broadcastMessage(f.getMessage());
+            f.printStackTrace();
         }
 
         yaml.createSection("players");
@@ -51,7 +51,7 @@ public class Main extends JavaPlugin {
         }
         catch(Exception d)
         {
-            Bukkit.broadcastMessage(d.getMessage());
+            d.printStackTrace();
         }
 
         //Fired when the server stops and disables all plugins
@@ -85,29 +85,31 @@ public class Main extends JavaPlugin {
 
                         yaml.createSection("players." + ((Player) sender).getUniqueId());
 
-                        yaml.set("players." + ((Player) sender).getUniqueId() + ".username", "\"" + sender.getName() + "\"");
-                        yaml.set("players." + ((Player) sender).getUniqueId() + ".god", "\"" + getConfig().getString("gods." + args[0].toLowerCase() + ".name" + "\""));
+                        yaml.set("players." + ((Player) sender).getUniqueId() + ".username", sender.getName());
+                        yaml.set("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"));
                         yaml.set("players." + ((Player) sender).getUniqueId() + ".faith", 0);
 
                         //sender.sendMessage(getConfig().getString(yaml.get("players." + ((Player) sender).getUniqueId() + ".god", getConfig().getString("gods." + args[0].toLowerCase() + ".name"))));
 
                     }
                     catch(Exception e){
-                        Bukkit.broadcastMessage(e.getMessage());
+                        e.printStackTrace();
                     }
                 }
                 else
                 {
+
+                    String senderGod = yaml.getString("players." + ((Player) sender).getUniqueId() + ".god");
                     sender.sendMessage(
                             "[" + ChatColor.AQUA + "Godsy" + ChatColor.RESET + "] " + ": You would have to forsake §"
                             + getConfig().getString(
-                                    "gods." + yaml.get("plugins/Godsy/players.yml", ("players." + ((Player) sender).getUniqueId() + ".god") + ".colour")
+                                    "gods." + senderGod + ".colour"
                             )
                             + getConfig().getString(
-                                    "gods." + yaml.get("plugins/Godsy/players.yml", ("players." + ((Player) sender).getUniqueId() + ".god").toLowerCase())
+                                    "gods." + senderGod + ".name"
                             )
                     );
-                    //yaml.get("players." + ((Player) sender).getUniqueId() + ".god");
+
                 }
                 return true;
             }
